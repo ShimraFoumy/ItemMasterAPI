@@ -1,26 +1,6 @@
-# Python
 *.pyc
-*.pyo
-*.pyd
 __pycache__/
-*.sqlite3
-*.env
-
-# Virtual environment
-venv/
-env/
-
-# VS Code settings
-.vscode/
-
-# Django
-*.log
-*.pot
-*.py[cod]
 db.sqlite3
+.env
+*.log
 /staticfiles/
-media/
-
-# Byte-compiled / temp files
-*.swp
-.DS_Store
