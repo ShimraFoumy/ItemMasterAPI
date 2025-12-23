@@ -4,12 +4,9 @@ from rest_framework import status
 from .models import Item
 from .serializers import ItemSerializer
 
-# List all items
-@api_view(['GET'])
-def items_list(request):
-    items = Item.objects.all()
-    serializer = ItemSerializer(items, many=True)
-    return Response(serializer.data)
+# ---------------------------
+# Function-based views (CRUD)
+# ---------------------------
 
 # Get single item by id
 @api_view(['GET'])
@@ -18,7 +15,6 @@ def item_detail(request, id):
         item = Item.objects.get(id=id)
     except Item.DoesNotExist:
         return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
-    
     serializer = ItemSerializer(item)
     return Response(serializer.data)
 
@@ -38,7 +34,6 @@ def update_item(request, id):
         item = Item.objects.get(id=id)
     except Item.DoesNotExist:
         return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
-    
     serializer = ItemSerializer(item, data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -52,7 +47,6 @@ def update_item_partial(request, id):
         item = Item.objects.get(id=id)
     except Item.DoesNotExist:
         return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
-    
     serializer = ItemSerializer(item, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
@@ -66,7 +60,6 @@ def delete_item(request, id):
         item = Item.objects.get(id=id)
     except Item.DoesNotExist:
         return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
-    
     item.delete()
     return Response({"message": "Item deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
@@ -77,12 +70,30 @@ def change_status(request, item_id):
         item = Item.objects.get(id=item_id)
     except Item.DoesNotExist:
         return Response({"error": "Item not found"}, status=status.HTTP_404_NOT_FOUND)
-
     new_status = request.data.get('status')
     if new_status not in ['ACTIVE', 'INACTIVE']:
         return Response({"error": "Invalid status"}, status=status.HTTP_400_BAD_REQUEST)
-
     item.status = new_status
     item.save()
     serializer = ItemSerializer(item)
     return Response(serializer.data)
+
+# --------------------------------
+# Class-based view for listing items
+# Supports Pagination, Sorting, Filtering
+# --------------------------------
+from rest_framework.generics import ListAPIView
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
+class ItemListView(ListAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+    filter_backends = [
+        DjangoFilterBackend,  # Filtering
+        OrderingFilter        # Sorting
+    ]
+
+    filterset_fields = ['name', 'status']  # fields you can filter by
+    ordering_fields = ['name', 'quantity', 'created_at']  # fields you can sort by
