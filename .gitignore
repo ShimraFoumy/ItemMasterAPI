@@ -1,6 +1,32 @@
-*.pyc
+# --------------------
+# Python
+# --------------------
 __pycache__/
-db.sqlite3
+*.py[cod]
+*.pyo
+*.pyd
+
+# --------------------
+# Virtual Environment
+# --------------------
+venv/
 .env
-*.log
-/staticfiles/
+.env.*
+
+# --------------------
+# Django
+# --------------------
+db.sqlite3
+media/
+staticfiles/
+
+# --------------------
+# VS Code
+# --------------------
+.vscode/
+
+# --------------------
+# OS files
+# --------------------
+.DS_Store
+Thumbs.db
